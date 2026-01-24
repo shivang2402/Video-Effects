@@ -114,7 +114,7 @@ int main(int argc, char *argv[]) {
       displayFrame = frame.clone();
       cv::cvtColor(frame, grey, cv::COLOR_BGR2GRAY);
       detectFaces(grey, faces);
-      drawBoxes(displayFrame, faces, cv::Scalar(0, 255, 0));
+      drawBoxes(displayFrame, faces);
       break;
     case '1':
       cv::cvtColor(frame, grey, cv::COLOR_BGR2GRAY);

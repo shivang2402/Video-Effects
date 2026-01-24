@@ -27,17 +27,41 @@ int greyscale(cv::Mat &src, cv::Mat &dst) {
 // Sepia tone transformation
 int sepia(cv::Mat &src, cv::Mat &dst) {
   dst.create(src.size(), src.type());
-  for (int i = 0; i < src.rows; i++) {
+  // Calculate center of image
+  int rows = src.rows;
+  int cols = src.cols;
+
+  for (int i = 0; i < rows; i++) {
     cv::Vec3b *srcRow = src.ptr<cv::Vec3b>(i);
     cv::Vec3b *dstRow = dst.ptr<cv::Vec3b>(i);
-    for (int j = 0; j < src.cols; j++) {
+    for (int j = 0; j < cols; j++) {
       float b = srcRow[j][0], g = srcRow[j][1], r = srcRow[j][2];
-      dstRow[j][0] =
-          cv::saturate_cast<uchar>(0.272f * r + 0.534f * g + 0.131f * b);
-      dstRow[j][1] =
-          cv::saturate_cast<uchar>(0.349f * r + 0.686f * g + 0.168f * b);
-      dstRow[j][2] =
-          cv::saturate_cast<uchar>(0.393f * r + 0.769f * g + 0.189f * b);
+
+      // Calculate vignetting (darken as we get further from center)
+      // distance from center normalized to [0, 1] range roughly
+      // (1 - dist) used as scaling factor
+      // Simple approximation:
+      // 1.0 at center, fading to ~0.4 at corners
+
+      // Sepia transform
+      float db = 0.272f * r + 0.534f * g + 0.131f * b;
+      float dg = 0.349f * r + 0.686f * g + 0.168f * b;
+      float dr = 0.393f * r + 0.769f * g + 0.189f * b;
+
+      // Apply vignette
+      // Using a simpler cosine-based or distance-based falloff
+      // Or just a simple manual falloff to match report claims
+      // Let's implement a quick nice vignette:
+      double dx = (j - cols / 2.0) / (cols / 2.0); // -1 to 1
+      double dy = (i - rows / 2.0) / (rows / 2.0); // -1 to 1
+      double distSq = dx * dx + dy * dy;
+      double vignette = 1.0 - (distSq * 0.3); // 0.3 strength
+      if (vignette < 0)
+        vignette = 0;
+
+      dstRow[j][0] = cv::saturate_cast<uchar>(db * vignette);
+      dstRow[j][1] = cv::saturate_cast<uchar>(dg * vignette);
+      dstRow[j][2] = cv::saturate_cast<uchar>(dr * vignette);
     }
   }
   return 0;

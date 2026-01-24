@@ -36,5 +36,8 @@ img: imgDisplay.o
 vid: vidDisplay.o filters.o faceDetect.o
 	$(CC) $^ -o $(BINDIR)/$@ $(LDFLAGS) $(LDLIBS)
 
+timeblur: timeBlur.o filters.o
+	$(CC) $^ -o $(BINDIR)/$@ $(LDFLAGS) $(LDLIBS)
+
 clean:
 	rm -f *.o *~

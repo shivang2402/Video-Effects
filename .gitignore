@@ -2,6 +2,7 @@
 bin/
 *.o
 *.obj
+*.dSYM
 
 # IDE files
 .vscode/
@@ -13,5 +14,12 @@ bin/
 # macOS
 .DS_Store
 
-# Model files (large binary files)
-*.onnx
+# Data / Large Files
+data/*.onnx
+data/*.png
+data/*.jpeg
+data/*.jpg
+data/*.xml
+
+# Generated PDF
+*.pdf
